@@ -57,6 +57,48 @@
             font-family: 'Inter', sans-serif;
             transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
         }
+        
+        /* --- CUSTOM REVENUE CARD LAYOUT --- */
+        .revenue-custom-card {
+            display: flex !important;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+        }
+
+        .revenue-custom-card .revenue-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .revenue-custom-card .revenue-info i {
+            margin-bottom: 0; /* Overrides default card icon margin */
+            font-size: 32px;
+        }
+
+        .revenue-custom-card .revenue-info h3 {
+            margin-bottom: 0;
+            line-height: 1.3;
+        }
+
+        .revenue-custom-card .revenue-amount {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .revenue-custom-card .revenue-amount .currency {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.1;
+        }
+
+        .revenue-custom-card .revenue-amount h1 {
+            line-height: 1.1;
+            margin-top: 4px;
+        }
 
         body {
             background: var(--bg-color);
@@ -325,7 +367,8 @@
             background: rgba(255,255,255,0.08);
             box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
         }
-        .input-control.is-invalid {
+        
+        .input-control.is-invalid, .form-control.is-invalid {
             border-color: var(--danger) !important;
             box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2) !important;
         }
@@ -569,26 +612,54 @@
             background: var(--primary); color: white; transform: translateY(-2px);
         }
 
-        .footer-col h4 { font-size: 13px; font-weight: 700; text-transform: uppercase; color: #f1f5f9; margin-bottom: 16px; }
+        .footer-col h4 {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+            color: #f1f5f9; margin-bottom: 18px;
+        }
+        .footer-col h4 i { color: var(--primary); font-size: 13px; }
         .footer-col ul { list-style: none; }
-        .footer-col ul li { margin-bottom: 10px; }
-        .footer-col ul li a { color: #64748b; text-decoration: none; font-size: 13.5px; }
+        .footer-col ul li { margin-bottom: 11px; }
+        .footer-col ul li a { display: flex; align-items: center; gap: 9px; color: #64748b; text-decoration: none; font-size: 13.5px; }
+        .footer-col ul li a i { font-size: 11px; width: 14px; color: #475569; text-align: center; }
         .footer-col ul li a:hover { color: #60a5fa; }
+        .footer-col ul li a:hover i { color: #60a5fa; }
 
+        .footer-contact-list { list-style: none; }
+        .footer-contact-list li {
+            display: flex; align-items: flex-start; gap: 10px;
+            margin-bottom: 14px; font-size: 13.5px; color: #94a3b8; line-height: 1.5;
+        }
+        .footer-contact-list li i { color: var(--primary); font-size: 13px; width: 14px; margin-top: 2px; text-align: center; }
+        .footer-contact-list li a { color: #94a3b8; text-decoration: none; }
+        .footer-contact-list li a:hover { color: #60a5fa; }
+
+        .footer-subscribe-label { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: #f1f5f9; margin: 20px 0 10px; }
         .footer-subscribe-box {
-            display: flex; gap: 8px; margin-top: 12px;
+            display: flex; gap: 8px;
         }
         .footer-subscribe-box .input-control {
             padding: 10px 14px; padding-left: 14px; background: rgba(255,255,255,0.03);
         }
+        .footer-subscribe-box .btn { padding: 10px 14px; }
 
-        .footer-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 40px 0 24px; }
-        .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; font-size: 13px; color: #475569; }
-        .footer-legal { display: flex; gap: 12px; }
+        .footer-stats-bar {
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            padding: 32px 0; border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .footer-stat { text-align: center; }
+        .footer-stat .stat-num { font-size: 1.7rem; font-weight: 800; color: #60a5fa; letter-spacing: -0.5px; }
+        .footer-stat .stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; margin-top: 4px; }
+
+        .footer-divider { height: 1px; background: rgba(255,255,255,0.06); margin-bottom: 24px; }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; font-size: 13px; color: #475569; margin-bottom: 20px; }
+        .footer-bottom .fa-heart { color: #ef4444; font-size: 11px; }
+        .footer-legal { display: flex; gap: 16px; }
         .footer-legal a { color: #475569; text-decoration: none; }
         .footer-legal a:hover { color: #60a5fa; }
-        .footer-badges { display: flex; gap: 8px; }
-        .footer-badge { padding: 4px 10px; border-radius: 6px; background: rgba(255,255,255,0.04); font-size: 11px; color: #64748b; font-weight: 600; border: 1px solid rgba(255,255,255,0.05); }
+        .footer-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+        .footer-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 99px; background: rgba(16, 185, 129, 0.08); font-size: 11px; color: #94a3b8; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.18); }
+        .footer-badge i { color: var(--success); font-size: 10px; }
 
         /* --- BACKOFFICE CORE SYSTEM LAYOUT --- */
         .dashboard { display: none; min-height: 100vh; }
@@ -791,6 +862,7 @@
             .hero-left-content p { margin: 0 auto 25px; }
             .feature-bullets { justify-content: center; }
             .footer-grid { grid-template-columns: 1fr 1fr; }
+            .footer-stats-bar { grid-template-columns: repeat(3, 1fr); gap: 20px; }
         }
 
         @media (max-width: 768px) {
@@ -804,6 +876,8 @@
             .main { padding: 20px; }
             .analytics-grid { grid-template-columns: 1fr; }
             .footer-grid { grid-template-columns: 1fr; }
+            .footer-stats-bar { grid-template-columns: repeat(2, 1fr); }
+            .footer-bottom { flex-direction: column; align-items: flex-start; }
             .theme-float { top: auto; bottom: 20px; right: 20px; }
         }
     </style>
@@ -822,12 +896,15 @@
             <div class="nav-meta-badge">
                 <i class="fas fa-shield-halved"></i> Enterprise Portal v4.2
             </div>
+            <div class="nav-meta-badge" style="background: rgba(139, 92, 246, 0.15); color: #a78bfa; border-color: rgba(139, 92, 246, 0.3);">
+                <i class="fas fa-paint-brush"></i> Design by K.G. Irosh Nirmal
+            </div>
         </nav>
 
         <section class="landing-hero">
             <div class="hero-left-content">
                 <div class="hero-tagline">
-                    <i class="fas fa-sparkles"></i> Intelligence Driven Fleet Optimization
+                    <i class="fas fa-wand-magic-sparkles"></i> Intelligence Driven Fleet Optimization
                 </div>
                 <h1>Next-Gen Fleet &amp; <span>Scheduling</span> Control</h1>
                 <p>An enterprise-grade operational ecosystem custom engineered for Sri Lankan driving institutions. Optimize instructors, tracks, billing, and safety vectors within a unified viewport.</p>
@@ -938,7 +1015,7 @@
                             <i class="fas fa-clock"></i> Expiration Window: <span id="otpCountdown" style="font-weight:700; color:#f8fafc;">02:00</span>
                         </div>
                         <button class="btn-login" onclick="fpVerifyOTP()">
-                            <span>Verify Code Integrity</span> <i class="fas fa-shield-check"></i>
+                            <span>Verify Code Integrity</span> <i class="fas fa-circle-check"></i>
                         </button>
                     </div>
 
@@ -966,7 +1043,7 @@
             </div>
             <div class="features-showcase-grid">
                 <div class="feature-card">
-                    <div class="icon-wrapper"><i class="fas fa-chart-network"></i></div>
+                    <div class="icon-wrapper"><i class="fas fa-network-wired"></i></div>
                     <h3>Unified Orchestration</h3>
                     <p>Track scheduling sequences, payment allocations, fleet tracking attributes, and operations metrics under a responsive cross-referenced terminal environment.</p>
                 </div>
@@ -991,49 +1068,85 @@
                             <div class="footer-logo-icon"><i class="fas fa-car-side"></i></div>
                             <div class="footer-logo-name">DriveSafe <span>Pro</span></div>
                         </div>
-                        <p class="footer-tagline">Providing resilient management infrastructure configurations for regional transit academies across the territory.</p>
+                        <p class="footer-tagline">Enterprise-grade fleet &amp; scheduling intelligence for modern driving institutions across Sri Lanka.</p>
                         <div class="footer-socials">
-                            <a href="#"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#"><i class="fab fa-x-twitter"></i></a>
-                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="http://facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="https://x.com/" target="_blank" rel="noopener noreferrer" aria-label="X">
+                                <i class="fab fa-x-twitter"></i>
+                            </a>
+                            <a href="https://sg.linkedin.com/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+                                <i class="fab fa-youtube"></i>
+                            </a>
                         </div>
                     </div>
                     <div class="footer-col">
-                        <h4>Platform Subsystems</h4>
+                        <h4><i class="fas fa-layer-group"></i> Platform</h4>
                         <ul>
-                            <li><a href="#">Scheduling Matrix</a></li>
-                            <li><a href="#">Fleet Diagnostics</a></li>
-                            <li><a href="#">Ledger Routing</a></li>
+                            <li><a href="#"><i class="fas fa-gauge"></i> Dashboard Overview</a></li>
+                            <li><a href="#"><i class="fas fa-user-graduate"></i> Student Management</a></li>
+                            <li><a href="#"><i class="fas fa-chalkboard-teacher"></i> Instructor Directory</a></li>
+                            <li><a href="#"><i class="fas fa-car"></i> Fleet Management</a></li>
+                            <li><a href="#"><i class="fas fa-calendar-days"></i> Lesson Scheduling</a></li>
+                            <li><a href="#"><i class="fas fa-file-invoice-dollar"></i> Billing &amp; Payments</a></li>
                         </ul>
                     </div>
                     <div class="footer-col">
-                        <h4>Security Protocols</h4>
+                        <h4><i class="fas fa-circle-question"></i> Support</h4>
                         <ul>
-                            <li><a href="#">GDPR Compliance</a></li>
-                            <li><a href="#">ISO 27001 Blueprint</a></li>
-                            <li><a href="#">SSL Cipher Suites</a></li>
+                            <li><a href="#"><i class="fas fa-book"></i> Documentation</a></li>
+                            <li><a href="#"><i class="fas fa-graduation-cap"></i> User Guides</a></li>
+                            <li><a href="#"><i class="fas fa-headset"></i> Help Desk</a></li>
+                            <li><a href="#"><i class="fas fa-bug"></i> Report a Bug</a></li>
+                            <li><a href="#"><i class="fas fa-clock-rotate-left"></i> Changelog</a></li>
+                            <li><a href="#"><i class="fas fa-shield-halved"></i> Security Policy</a></li>
                         </ul>
                     </div>
                     <div class="footer-col">
-                        <h4>Corporate Communications</h4>
-                        <p style="font-size:13px; color:#64748b; margin-bottom:12px;">Subscribe to operational bulletins</p>
+                        <h4><i class="fas fa-address-card"></i> Contact Us</h4>
+                        <ul class="footer-contact-list">
+                            <li><i class="fas fa-location-dot"></i> 80/20 Kudamarke, Gampola<br>Kandy District, Sri Lanka</li>
+                            <li><i class="fas fa-phone"></i> <a href="tel:+94776928542">+94 77 692 8542</a></li>
+                            <li><i class="fas fa-envelope"></i> <a href="mailto:support@drivesafepro.lk">support@drivesafepro.lk</a></li>
+                            <li><i class="fas fa-clock"></i> Mon – Fri&nbsp;|&nbsp;8:00 AM – 6:00 PM</li>
+                        </ul>
+                        <p class="footer-subscribe-label">Subscribe for system updates:</p>
                         <div class="footer-subscribe-box">
-                            <input type="email" id="footerEmail" class="input-control" placeholder="operator@academy.com">
-                            <button class="btn" onclick="footerSubscribe()"><i class="fas fa-envelope"></i></button>
+                            <input type="email" id="footerEmail" class="input-control" placeholder="Enter your email">
+                            <button class="btn" onclick="footerSubscribe()"><i class="fas fa-paper-plane"></i></button>
                         </div>
                     </div>
                 </div>
+
+                <div class="footer-stats-bar">
+                    <div class="footer-stat"><div class="stat-num">2,400+</div><div class="stat-label">Students Managed</div></div>
+                    <div class="footer-stat"><div class="stat-num">180+</div><div class="stat-label">Certified Instructors</div></div>
+                    <div class="footer-stat"><div class="stat-num">95+</div><div class="stat-label">Fleet Vehicles</div></div>
+                    <div class="footer-stat"><div class="stat-num">99.8%</div><div class="stat-label">Uptime SLA</div></div>
+                    <div class="footer-stat"><div class="stat-num">v2.2</div><div class="stat-label">Stable Release</div></div>
+                </div>
+
                 <div class="footer-divider"></div>
                 <div class="footer-bottom">
-                    <p>&copy; <span id="footerYear"></span> DriveSafe Pro Systems Node. All rights reserved.</p>
+                    <p>&copy; <span id="footerYear"></span> DriveSafe Pro. All rights reserved. Built with <i class="fas fa-heart"></i> in Sri Lanka.</p>
                     <div class="footer-legal">
-                        <a href="#">Legal Agreement</a>
-                        <a href="#">Privacy Paradigm</a>
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                        <a href="#">Cookie Policy</a>
+                        <a href="#">Accessibility</a>
                     </div>
-                    <div class="footer-badges">
-                        <span class="footer-badge"><i class="fas fa-shield-check" style="color:var(--success);"></i> SLA 99.99%</span>
-                        <span class="footer-badge">AES-256</span>
-                    </div>
+                </div>
+                <div class="footer-badges">
+                    <span class="footer-badge"><i class="fas fa-lock"></i> SSL Secured</span>
+                    <span class="footer-badge"><i class="fas fa-shield-halved"></i> GDPR Ready</span>
+                    <span class="footer-badge"><i class="fas fa-circle-check"></i> ISO 27001</span>
                 </div>
             </div>
         </footer>
@@ -1093,10 +1206,15 @@
                             <h3>Booked Sessions</h3>
                             <h1 id="dLessons">0</h1>
                         </div>
-                        <div class="card" id="revenueCard">
-                            <i class="fas fa-money-bill-trend-up" style="color:var(--success);"></i>
-                            <h3>Aggregated Invoiced Pool</h3>
-                            <h1 id="dRevenue">LKR 0</h1>
+                        <div class="card revenue-custom-card" id="revenueCard">
+                            <div class="revenue-info">
+                                <i class="fas fa-money-bill-trend-up" style="color:var(--success);"></i>
+                                <h3>Aggregated<br>Invoiced Pool</h3>
+                            </div>
+                            <div class="revenue-amount">
+                                <span class="currency">LKR</span>
+                                <h1 id="dRevenue">0</h1>
+                            </div>
                         </div>
                     </div>
 
@@ -1312,8 +1430,7 @@
                 <h3 id="modalTitle">Entity Parameter Dialog</h3>
                 <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
             </div>
-            <div class="modal-body" id="modalBody">
-                </div>
+            <div class="modal-body" id="modalBody"></div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="closeModal()">Abort Context</button>
                 <button class="btn" id="modalSubmitBtn" onclick="submitModalForm()">Commit Configurations State Sequence</button>
@@ -1345,7 +1462,8 @@
             phone: (val) => /^\+94\d{9}$/.test(val.trim()), 
             plate: (val) => /^[A-Z]{2,3}\s[A-Z]{2,3}-\d{4}$/i.test(val.trim()), 
             license: (val) => /^L-DMV-\d{5}$/i.test(val.trim()), 
-            text: (val, min = 2) => val.trim().length >= min
+            text: (val, min = 2) => val.trim().length >= min,
+            email: (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim())
         };
 
         /* --- SEED INJECTOR UTILITY FOR COLD ENGINE START CYCLE BOOTSTRAP --- */
@@ -1363,7 +1481,7 @@
                 { id: 302, model: "Suzuki Alto", plate: "WP CAA-8831", transmission: "Manual", status: "Active", serviceDate: "2026-05-01" }
             ];
             db.lessons = [
-                { id: 401, student: "Nimlesh Perera", instructor: "Captain Ranjith Silva", vehicle: "Toyota Vitz (WP CAD-2291)", dateTime: "2026-07-10T10:00", status: "Scheduled" }
+                { id: 401, student: "Nimlesh Perera", instructor: "Captain Ranjith Silva", vehicle: "Toyota Vitz (WP CAD-2291)", dateTime: "2026-08-12T10:00", status: "Scheduled" }
             ];
             db.payments = [
                 { id: 501, student: "Nimlesh Perera", amount: "45000", method: "POS Terminals Card", date: "2026-06-15" },
@@ -1371,7 +1489,7 @@
             ];
         }
 
-        /* --- INTIAL PERSISTENCE ENGINE DEPLOYMENT RESOLVERS --- */
+        /* --- INITIAL PERSISTENCE ENGINE DEPLOYMENT RESOLVERS --- */
         function initDatabaseContext() {
             const cache = localStorage.getItem('drivingSchoolDB');
             if (cache) {
@@ -1578,7 +1696,7 @@
         function applyRoleSecurityConstraints() {
             // Reset visible blocks
             const blocks = ['menuStudents', 'menuInstructors', 'menuVehicles', 'menuPayments', 'menuAnalytics', 'revenueCard', 'btnAddStudent', 'btnAddInstructor', 'btnAddVehicle', 'btnBookLesson', 'btnRecordPayment'];
-            blocks.forEach(id => { if(document.getElementById(id)) document.getElementById(id).style.display = 'inline-flex'; });
+            blocks.forEach(id => { if(document.getElementById(id)) document.getElementById(id).style.display = ''; });
 
             if (currentRole === 'instructor') {
                 const hidden = ['menuPayments', 'menuAnalytics', 'revenueCard', 'btnAddInstructor', 'btnAddVehicle', 'btnRecordPayment'];
@@ -1615,7 +1733,7 @@
             document.getElementById('dLessons').innerText = db.lessons.length;
 
             const revSum = db.payments.reduce((acc, p) => acc + parseFloat(p.amount || 0), 0);
-            document.getElementById('dRevenue').innerText = `LKR ${revSum.toLocaleString()}`;
+            document.getElementById('dRevenue').innerText = `${revSum.toLocaleString()}`;
 
             const manualCount = db.vehicles.filter(v => v.transmission === 'Manual').length;
             document.getElementById('analyticsManual').innerText = manualCount;
@@ -1630,13 +1748,15 @@
 
         /* --- DYNAMIC PROFILE ARCHITECTURE RENDER TABLES DATA FLOW --- */
         function renderStudentsTable() {
-            const query = document.getElementById('searchStudents').value.toLowerCase();
+            const queryInput = document.getElementById('searchStudents');
+            if(!queryInput) return;
+            const query = queryInput.value.toLowerCase();
             const target = document.getElementById('studentsTableBody');
             if(!target) return;
             target.innerHTML = '';
 
-            db.students.filter(s => s.name.toLowerCase().includes(query) || s.email.toLowerCase().includes(query)).forEach(s => {
-                const actionsHtml = currentRole === 'student' ? '' : `
+            db.students.filter(s => (s.name || '').toLowerCase().includes(query) || (s.email || '').toLowerCase().includes(query)).forEach(s => {
+                const actionsHtml = currentRole === 'student' ? '<td></td>' : `
                     <td class="action-btns">
                         <button class="action-btn edit" onclick="openEditModal('students', ${s.id})" title="Modify Profile Parameters"><i class="fas fa-edit"></i></button>
                         <button class="action-btn delete" onclick="deleteRecord('students', ${s.id})" title="Wipe Data Record"><i class="fas fa-trash"></i></button>
@@ -1655,13 +1775,15 @@
         }
 
         function renderInstructorsTable() {
-            const query = document.getElementById('searchInstructors').value.toLowerCase();
+            const queryInput = document.getElementById('searchInstructors');
+            if(!queryInput) return;
+            const query = queryInput.value.toLowerCase();
             const target = document.getElementById('instructorsTableBody');
             if(!target) return;
             target.innerHTML = '';
 
-            db.instructors.filter(i => i.name.toLowerCase().includes(query) || i.specialization.toLowerCase().includes(query)).forEach(i => {
-                const actionsHtml = currentRole !== 'admin' ? '' : `
+            db.instructors.filter(i => (i.name || '').toLowerCase().includes(query) || (i.specialization || '').toLowerCase().includes(query)).forEach(i => {
+                const actionsHtml = currentRole !== 'admin' ? '<td></td>' : `
                     <td class="action-btns">
                         <button class="action-btn edit" onclick="openEditModal('instructors', ${i.id})" title="Edit Module Profile"><i class="fas fa-edit"></i></button>
                         <button class="action-btn delete" onclick="deleteRecord('instructors', ${i.id})" title="Purge Record Slot"><i class="fas fa-trash"></i></button>
@@ -1680,13 +1802,15 @@
         }
 
         function renderVehiclesTable() {
-            const query = document.getElementById('searchVehicles').value.toLowerCase();
+            const queryInput = document.getElementById('searchVehicles');
+            if(!queryInput) return;
+            const query = queryInput.value.toLowerCase();
             const target = document.getElementById('vehiclesTableBody');
             if(!target) return;
             target.innerHTML = '';
 
-            db.vehicles.filter(v => v.model.toLowerCase().includes(query) || v.plate.toLowerCase().includes(query)).forEach(v => {
-                const actionsHtml = currentRole !== 'admin' ? '' : `
+            db.vehicles.filter(v => (v.model || '').toLowerCase().includes(query) || (v.plate || '').toLowerCase().includes(query)).forEach(v => {
+                const actionsHtml = currentRole !== 'admin' ? '<td></td>' : `
                     <td class="action-btns">
                         <button class="action-btn edit" onclick="openEditModal('vehicles', ${v.id})" title="Update Configuration Matrix"><i class="fas fa-edit"></i></button>
                         <button class="action-btn delete" onclick="deleteRecord('vehicles', ${v.id})" title="De-authorize Fleet Asset Unit"><i class="fas fa-trash"></i></button>
@@ -1705,13 +1829,15 @@
         }
 
         function renderLessonsTable() {
-            const query = document.getElementById('searchLessons').value.toLowerCase();
+            const queryInput = document.getElementById('searchLessons');
+            if(!queryInput) return;
+            const query = queryInput.value.toLowerCase();
             const target = document.getElementById('lessonsTableBody');
             if(!target) return;
             target.innerHTML = '';
 
-            db.lessons.filter(l => l.student.toLowerCase().includes(query) || l.instructor.toLowerCase().includes(query)).forEach(l => {
-                const actionsHtml = currentRole === 'student' ? '' : `
+            db.lessons.filter(l => (l.student || '').toLowerCase().includes(query) || (l.instructor || '').toLowerCase().includes(query)).forEach(l => {
+                const actionsHtml = currentRole === 'student' ? '<td></td>' : `
                     <td class="action-btns">
                         <button class="action-btn delete" onclick="deleteRecord('lessons', ${l.id})" style="color:var(--danger);" title="Revoke Allocation Order Slot Link"><i class="fas fa-times-circle"></i></button>
                     </td>`;
@@ -1730,12 +1856,14 @@
         }
 
         function renderPaymentsTable() {
-            const query = document.getElementById('searchPayments').value.toLowerCase();
+            const queryInput = document.getElementById('searchPayments');
+            if(!queryInput) return;
+            const query = queryInput.value.toLowerCase();
             const target = document.getElementById('paymentsTableBody');
             if(!target) return;
             target.innerHTML = '';
 
-            db.payments.filter(p => p.student.toLowerCase().includes(query)).forEach(p => {
+            db.payments.filter(p => (p.student || '').toLowerCase().includes(query)).forEach(p => {
                 target.innerHTML += `<tr>
                     <td>#INV-${p.id}</td>
                     <td><b>${p.student}</b></td>
@@ -1905,7 +2033,7 @@
                 const phone = document.getElementById('fStuPhone').value;
                 
                 if(!validators.text(name, 2)) { triggerInlineValidationError('fStuName', 'Name fails criteria constraints validation.'); failsRules = true; }
-                if(!validators.text(email, 4)) { triggerInlineValidationError('fStuEmail', 'Email pattern block missing structural indices parameters.'); failsRules = true; }
+                if(!validators.email(email)) { triggerInlineValidationError('fStuEmail', 'Email pattern block missing structural indices parameters.'); failsRules = true; }
                 if(!validators.phone(phone)) { triggerInlineValidationError('fStuPhone', 'Invalid formatting configuration constraints rules framework. Pattern layout: +94771234567'); failsRules = true; }
 
                 if(failsRules) return;
@@ -2058,16 +2186,18 @@
                 (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches);
             if(cachedTheme) {
                 document.body.classList.add('dark-mode');
-                const b = document.getElementById('themeToggleFloat');
-                if(b) {
-                    b.querySelector('i').className = 'fas fa-sun';
-                    b.querySelector('span').innerText = 'Light Mode';
-                }
+                const btns = [document.getElementById('themeToggleFloat'), document.querySelector('.sidebar-theme-btn')];
+                btns.forEach(b => {
+                    if(b) {
+                        const icon = b.querySelector('i');
+                        const span = b.querySelector('span');
+                        if(icon) icon.className = 'fas fa-sun';
+                        if(span) span.innerText = 'Light Mode';
+                    }
+                });
             }
             syncThemeButtonVisibility();
         };
     </script>
 </body>
 </html>
-
-//created by irosh nirmal
