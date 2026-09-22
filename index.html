@@ -1446,71 +1446,30 @@
 
     <script>
         /* --- GLOBAL MEMORY IN-MEMORY STATE PROTOCOLS --- */
+        let authToken = localStorage.getItem('authToken');
+        
+        async function apiFetch(endpoint, options = {}) {
+            const headers = { 'Content-Type': 'application/json' };
+            if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
+            const config = { ...options, headers };
+            const res = await fetch(endpoint, config);
+            if (res.status === 401 || res.status === 403) {
+                logout();
+                throw new Error("Unauthorized");
+            }
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.error || 'API Error');
+            }
+            return res.json();
+        }
+
         let currentRole = 'admin';
         let activeModalTarget = '';
         let activeEditId = null;
         let otpTimerInterval = null;
 
-        let db = {
-            students: [],
-            instructors: [],
-            vehicles: [],
-            lessons: [],
-            payments: []
-        };
-
-        /* --- IMMUTABLE VALIDATION STRUCTURAL SCHEMAS ASSERTIONS --- */
-        const validators = {
-            phone: (val) => /^\+94\d{9}$/.test(val.trim()), 
-            plate: (val) => /^[A-Z]{2,3}\s[A-Z]{2,3}-\d{4}$/i.test(val.trim()), 
-            license: (val) => /^L-DMV-\d{5}$/i.test(val.trim()), 
-            text: (val, min = 2) => val.trim().length >= min,
-            email: (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim())
-        };
-
-        /* --- SEED INJECTOR UTILITY FOR COLD ENGINE START CYCLE BOOTSTRAP --- */
-        function seedMockData() {
-            db.students = [
-                { id: 101, name: "Nimlesh Perera", email: "nimlesh@example.com", phone: "+94771234567", package: "Premium Auto Course", status: "Active" },
-                { id: 102, name: "Fathima Rizna", email: "rizna@example.com", phone: "+94719876543", package: "Regular Manual Course", status: "Active" }
-            ];
-            db.instructors = [
-                { id: 201, name: "Captain Ranjith Silva", license: "L-DMV-90142", phone: "+94752221111", specialization: "Defensive Driving Pro", availability: "Available" },
-                { id: 202, name: "Mahinda Alwis", license: "L-DMV-33152", phone: "+94724449999", specialization: "Light Motor Cars", availability: "Available" }
-            ];
-            db.vehicles = [
-                { id: 301, model: "Toyota Vitz", plate: "WP CAD-2291", transmission: "Automatic", status: "Active", serviceDate: "2026-04-12" },
-                { id: 302, model: "Suzuki Alto", plate: "WP CAA-8831", transmission: "Manual", status: "Active", serviceDate: "2026-05-01" }
-            ];
-            db.lessons = [
-                { id: 401, student: "Nimlesh Perera", instructor: "Captain Ranjith Silva", vehicle: "Toyota Vitz (WP CAD-2291)", dateTime: "2026-08-12T10:00", status: "Scheduled" }
-            ];
-            db.payments = [
-                { id: 501, student: "Nimlesh Perera", amount: "45000", method: "POS Terminals Card", date: "2026-06-15" },
-                { id: 502, student: "Fathima Rizna", amount: "35000", method: "Cash Transfer", date: "2026-06-18" }
-            ];
-        }
-
-        /* --- INITIAL PERSISTENCE ENGINE DEPLOYMENT RESOLVERS --- */
-        function initDatabaseContext() {
-            const cache = localStorage.getItem('drivingSchoolDB');
-            if (cache) {
-                try {
-                    db = JSON.parse(cache);
-                } catch(e) {
-                    seedMockData();
-                    saveState();
-                }
-            } else {
-                seedMockData();
-                saveState();
-            }
-        }
-
-        function saveState() {
-            localStorage.setItem('drivingSchoolDB', JSON.stringify(db));
-            updateUI();
-        }
+        let db = { students: [], instructors: [], vehicles: [], lessons: [], payments: [] };
 
         /* --- THEME CONTEXT SWITCH CONTROLLERS --- */
         function toggleDarkMode() {
@@ -1671,28 +1630,40 @@
         }
 
         /* --- PORTAL ENTRANCE SECURITY AND ROUTING SUBSYSTEM MODULE --- */
-        function login() {
+        async function login() {
             const user = document.getElementById('username').value.trim();
             const pass = document.getElementById('password').value.trim();
             currentRole = document.getElementById('role').value;
 
             if(!user || !pass) return showToast('Gateway access failure conditions detected: Empty credential blocks.', true);
             
-            const baselineToken = window._demoNewPassword || 'password';
-            if(user !== 'admin' || pass !== baselineToken) return showToast('Security threat alert containment layer: Invalid challenge credentials.', true);
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: user, password: pass, role: currentRole })
+                });
+                
+                if (!res.ok) throw new Error("Invalid credentials or role");
+                
+                const data = await res.json();
+                authToken = data.token;
+                localStorage.setItem('authToken', authToken);
+                currentRole = data.role;
 
-            // Access Granted: Unmount authentication layer and interface operational views context
-            document.getElementById('loginWrapper').style.display = 'none';
-            document.getElementById('system').style.display = 'block';
-            syncThemeButtonVisibility();
+                document.getElementById('loginWrapper').style.display = 'none';
+                document.getElementById('system').style.display = 'block';
+                syncThemeButtonVisibility();
 
-            document.getElementById('portalGreetingTitle').innerText = `Monitor Interface - Node: ${user.toUpperCase()} (${currentRole.toUpperCase()})`;
+                document.getElementById('portalGreetingTitle').innerText = `Monitor Interface - Node: ${user.toUpperCase()} (${currentRole.toUpperCase()})`;
 
-            // Apply granular security tier access parameter mappings
-            applyRoleSecurityConstraints();
-            
-            showToast(`Operational node synchronization successful. Welcome back, agent.`);
-            updateUI();
+                applyRoleSecurityConstraints();
+                
+                showToast(`Operational node synchronization successful. Welcome back, agent.`);
+                updateUI();
+            } catch(e) {
+                showToast('Security threat alert containment layer: Invalid challenge credentials.', true);
+            }
         }
 
         function applyRoleSecurityConstraints() {
@@ -1709,7 +1680,7 @@
             }
         }
 
-        function logout() {
+        function logout() { localStorage.removeItem("authToken");
             location.reload();
         }
 
@@ -1726,20 +1697,26 @@
         }
 
         /* --- USER MONITOR CONSOLE RENDER DATA HANDLERS --- */
-        function updateUI() {
+        async function updateUI() {
             if(!document.getElementById('system') || document.getElementById('system').style.display === 'none') return;
 
-            document.getElementById('dStudents').innerText = db.students.length;
-            document.getElementById('dInstructors').innerText = db.instructors.length;
-            document.getElementById('dVehicles').innerText = db.vehicles.length;
-            document.getElementById('dLessons').innerText = db.lessons.length;
+            try {
+                const stats = await apiFetch('/api/dashboard/stats');
+                document.getElementById('dStudents').innerText = stats.students || 0;
+                document.getElementById('dInstructors').innerText = stats.instructors || 0;
+                document.getElementById('dVehicles').innerText = stats.vehicles || 0;
+                document.getElementById('dLessons').innerText = stats.lessons || 0;
+                document.getElementById('dRevenue').innerText = `${(stats.revenue || 0).toLocaleString()}`;
 
-            const revSum = db.payments.reduce((acc, p) => acc + parseFloat(p.amount || 0), 0);
-            document.getElementById('dRevenue').innerText = `${revSum.toLocaleString()}`;
+                // For analytics charts, fetch vehicles specifically
+                const vehicles = await apiFetch('/api/vehicles');
+                const manualCount = vehicles.filter(v => v.transmission === 'Manual').length;
+                document.getElementById('analyticsManual').innerText = manualCount;
+                document.getElementById('analyticsAuto').innerText = vehicles.length - manualCount;
 
-            const manualCount = db.vehicles.filter(v => v.transmission === 'Manual').length;
-            document.getElementById('analyticsManual').innerText = manualCount;
-            document.getElementById('analyticsAuto').innerText = db.vehicles.length - manualCount;
+            } catch(e) {
+                console.error(e);
+            }
 
             renderStudentsTable();
             renderInstructorsTable();
@@ -1749,132 +1726,79 @@
         }
 
         /* --- DYNAMIC PROFILE ARCHITECTURE RENDER TABLES DATA FLOW --- */
-        function renderStudentsTable() {
+        async function renderStudentsTable() {
             const queryInput = document.getElementById('searchStudents');
             if(!queryInput) return;
             const query = queryInput.value.toLowerCase();
             const target = document.getElementById('studentsTableBody');
             if(!target) return;
+            
+            try {
+                db.students = await apiFetch('/api/students');
+            } catch (e) { return; }
             target.innerHTML = '';
 
-            db.students.filter(s => (s.name || '').toLowerCase().includes(query) || (s.email || '').toLowerCase().includes(query)).forEach(s => {
-                const actionsHtml = currentRole === 'student' ? '<td></td>' : `
-                    <td class="action-btns">
-                        <button class="action-btn edit" onclick="openEditModal('students', ${s.id})" title="Modify Profile Parameters"><i class="fas fa-edit"></i></button>
-                        <button class="action-btn delete" onclick="deleteRecord('students', ${s.id})" title="Wipe Data Record"><i class="fas fa-trash"></i></button>
-                    </td>`;
-                
-                target.innerHTML += `<tr>
-                    <td>#STU-${s.id}</td>
-                    <td><b>${s.name}</b></td>
-                    <td>${s.email}</td>
-                    <td>${s.phone}</td>
-                    <td><span class="badge badge-primary">${s.package}</span></td>
-                    <td><span class="badge ${s.status === 'Active' ? 'badge-success' : 'badge-danger'}">${s.status}</span></td>
-                    ${actionsHtml}
-                </tr>`;
-            });
+            db.students.filter
         }
 
-        function renderInstructorsTable() {
+        async function renderInstructorsTable() {
             const queryInput = document.getElementById('searchInstructors');
             if(!queryInput) return;
             const query = queryInput.value.toLowerCase();
             const target = document.getElementById('instructorsTableBody');
             if(!target) return;
+            
+            try {
+                db.instructors = await apiFetch('/api/instructors');
+            } catch (e) { return; }
             target.innerHTML = '';
 
-            db.instructors.filter(i => (i.name || '').toLowerCase().includes(query) || (i.specialization || '').toLowerCase().includes(query)).forEach(i => {
-                const actionsHtml = currentRole !== 'admin' ? '<td></td>' : `
-                    <td class="action-btns">
-                        <button class="action-btn edit" onclick="openEditModal('instructors', ${i.id})" title="Edit Module Profile"><i class="fas fa-edit"></i></button>
-                        <button class="action-btn delete" onclick="deleteRecord('instructors', ${i.id})" title="Purge Record Slot"><i class="fas fa-trash"></i></button>
-                    </td>`;
-
-                target.innerHTML += `<tr>
-                    <td>#INS-${i.id}</td>
-                    <td><b>${i.name}</b></td>
-                    <td><code>${i.license}</code></td>
-                    <td>${i.phone}</td>
-                    <td>${i.specialization}</td>
-                    <td><span class="badge badge-success">${i.availability}</span></td>
-                    ${actionsHtml}
-                </tr>`;
-            });
+            db.instructors.filter
         }
 
-        function renderVehiclesTable() {
+        async function renderVehiclesTable() {
             const queryInput = document.getElementById('searchVehicles');
             if(!queryInput) return;
             const query = queryInput.value.toLowerCase();
             const target = document.getElementById('vehiclesTableBody');
             if(!target) return;
+
+            try {
+                db.vehicles = await apiFetch('/api/vehicles');
+            } catch (e) { return; }
             target.innerHTML = '';
 
-            db.vehicles.filter(v => (v.model || '').toLowerCase().includes(query) || (v.plate || '').toLowerCase().includes(query)).forEach(v => {
-                const actionsHtml = currentRole !== 'admin' ? '<td></td>' : `
-                    <td class="action-btns">
-                        <button class="action-btn edit" onclick="openEditModal('vehicles', ${v.id})" title="Update Configuration Matrix"><i class="fas fa-edit"></i></button>
-                        <button class="action-btn delete" onclick="deleteRecord('vehicles', ${v.id})" title="De-authorize Fleet Asset Unit"><i class="fas fa-trash"></i></button>
-                    </td>`;
-
-                target.innerHTML += `<tr>
-                    <td>#VEH-${v.id}</td>
-                    <td><b>${v.model}</b></td>
-                    <td><code>${v.plate}</code></td>
-                    <td><span class="badge badge-primary">${v.transmission}</span></td>
-                    <td><span class="badge badge-success">${v.status}</span></td>
-                    <td>${v.serviceDate}</td>
-                    ${actionsHtml}
-                </tr>`;
-            });
+            db.vehicles.filter
         }
 
-        function renderLessonsTable() {
+        async function renderLessonsTable() {
             const queryInput = document.getElementById('searchLessons');
             if(!queryInput) return;
             const query = queryInput.value.toLowerCase();
             const target = document.getElementById('lessonsTableBody');
             if(!target) return;
+
+            try {
+                db.lessons = await apiFetch('/api/lessons');
+            } catch (e) { return; }
             target.innerHTML = '';
 
-            db.lessons.filter(l => (l.student || '').toLowerCase().includes(query) || (l.instructor || '').toLowerCase().includes(query)).forEach(l => {
-                const actionsHtml = currentRole === 'student' ? '<td></td>' : `
-                    <td class="action-btns">
-                        <button class="action-btn delete" onclick="deleteRecord('lessons', ${l.id})" style="color:var(--danger);" title="Revoke Allocation Order Slot Link"><i class="fas fa-times-circle"></i></button>
-                    </td>`;
-
-                const formattedTime = l.dateTime.replace('T', ' ');
-                target.innerHTML += `<tr>
-                    <td>#LES-${l.id}</td>
-                    <td><b>${l.student}</b></td>
-                    <td>${l.instructor}</td>
-                    <td><small>${l.vehicle}</small></td>
-                    <td><code>${formattedTime}</code></td>
-                    <td><span class="badge badge-warning">${l.status}</span></td>
-                    ${actionsHtml}
-                </tr>`;
-            });
+            db.lessons.filter
         }
 
-        function renderPaymentsTable() {
+        async function renderPaymentsTable() {
             const queryInput = document.getElementById('searchPayments');
             if(!queryInput) return;
             const query = queryInput.value.toLowerCase();
             const target = document.getElementById('paymentsTableBody');
             if(!target) return;
+
+            try {
+                db.payments = await apiFetch('/api/payments');
+            } catch (e) { return; }
             target.innerHTML = '';
 
-            db.payments.filter(p => (p.student || '').toLowerCase().includes(query)).forEach(p => {
-                target.innerHTML += `<tr>
-                    <td>#INV-${p.id}</td>
-                    <td><b>${p.student}</b></td>
-                    <td>LKR ${parseFloat(p.amount).toLocaleString()}</td>
-                    <td><small>${p.method}</small></td>
-                    <td>${p.date}</td>
-                    <td><span class="badge badge-success">Clearing Verified</span></td>
-                </tr>`;
-            });
+            db.payments.filter
         }
 
         /* --- CENTRALIZED INTERACTIVE MODAL BOX SYSTEM LAYOUT HANDLERS --- */
@@ -2024,10 +1948,11 @@
             }
         }
 
-        function submitModalForm() {
+        async function submitModalForm() {
             clearInlineFormErrors();
             let failsRules = false;
             const t = activeModalTarget;
+            let data = {};
 
             if (t === 'students') {
                 const name = document.getElementById('fStuName').value;
@@ -2040,19 +1965,11 @@
 
                 if(failsRules) return;
 
-                const data = {
-                    id: activeEditId || Date.now(),
+                data = {
                     name, email, phone,
                     package: document.getElementById('fStuPkg').value,
                     status: document.getElementById('fStuStatus').value
                 };
-
-                if(activeEditId) {
-                    const idx = db.students.findIndex(x => x.id === activeEditId);
-                    db.students[idx] = data;
-                } else {
-                    db.students.push(data);
-                }
             } 
             else if (t === 'instructors') {
                 const name = document.getElementById('fInsName').value;
@@ -2066,18 +1983,10 @@
 
                 if(failsRules) return;
 
-                const data = {
-                    id: activeEditId || Date.now(),
+                data = {
                     name, license, phone, specialization,
                     availability: document.getElementById('fInsAvail').value
                 };
-
-                if(activeEditId) {
-                    const idx = db.instructors.findIndex(x => x.id === activeEditId);
-                    db.instructors[idx] = data;
-                } else {
-                    db.instructors.push(data);
-                }
             }
             else if (t === 'vehicles') {
                 const model = document.getElementById('fVehModel').value;
@@ -2090,56 +1999,66 @@
 
                 if(failsRules) return;
 
-                const data = {
-                    id: activeEditId || Date.now(),
+                data = {
                     model, plate, serviceDate,
                     transmission: document.getElementById('fVehTrans').value,
                     status: document.getElementById('fVehStatus').value
                 };
-
-                if(activeEditId) {
-                    const idx = db.vehicles.findIndex(x => x.id === activeEditId);
-                    db.vehicles[idx] = data;
-                } else {
-                    db.vehicles.push(data);
-                }
             }
             else if (t === 'lessons') {
                 const dateTime = document.getElementById('fLesTime').value;
                 if(!dateTime) { triggerInlineValidationError('fLesTime', 'Time windows allocation boundaries cannot settle null states context.'); return; }
 
-                db.lessons.push({
-                    id: Date.now(),
+                data = {
                     student: document.getElementById('fLesStu').value,
                     instructor: document.getElementById('fLesIns').value,
                     vehicle: document.getElementById('fLesVeh').value,
                     dateTime,
                     status: 'Scheduled'
-                });
+                };
             }
             else if (t === 'payments') {
                 const amount = document.getElementById('fPayAmt').value;
                 if(!amount || parseFloat(amount) <= 0) { triggerInlineValidationError('fPayAmt', 'Ledger invoice transactions value must map integer states greater than zero bounds.'); return; }
 
-                db.payments.push({
-                    id: Date.now(),
+                data = {
                     student: document.getElementById('fPayStu').value,
                     amount,
                     method: document.getElementById('fPayMethod').value,
                     date: new Date().toISOString().split('T')[0]
-                });
+                };
             }
 
-            closeModal();
-            saveState();
-            showToast('Entity configuration tracking context state sequence finalized and committed successfully.');
+            try {
+                let url = '/api/' + t;
+                let method = 'POST';
+                if (activeEditId) {
+                    url += '/' + activeEditId;
+                    method = 'PUT';
+                }
+                
+                await apiFetch(url, {
+                    method: method,
+                    body: JSON.stringify(data)
+                });
+
+                closeModal();
+                updateUI();
+                showToast('Entity configuration tracking context state sequence finalized and committed successfully.');
+            } catch (err) {
+                showToast('API Error: ' + err.message, true);
+            }
         }
 
-        function deleteRecord(table, id) {
+        async function deleteRecord(table, id) {
             if(confirm('Are you absolutely certain you intend to drop this active data node mapping structural pointer instance link? This action cannot be reversed under transactional protocol routines frameworks.')) {
-                db[table] = db[table].filter(x => x.id !== id);
-                saveState();
-                showToast('Entity structural map index drop transaction sequence finalized cleanly.');
+                try {
+                    await apiFetch('/api/' + table + '/' + id, { method: 'DELETE' });
+                    updateUI();
+                    showToast('Entity structural map index drop transaction sequence finalized cleanly.');
+                } catch (err) {
+                    showToast('Error deleting record: ' + err.message, true);
+                }
             }
         }
 
@@ -2178,7 +2097,7 @@
 
         /* --- ENGINE INITIALIZATION AND MOUNT SYSTEM HOOK --- */
         window.onload = function() {
-            initDatabaseContext();
+            if (authToken) { document.getElementById("loginWrapper").style.display="none"; document.getElementById("system").style.display="block"; updateUI(); }
             
             // Sync dynamic footer runtime parameters
             document.getElementById('footerYear').textContent = new Date().getFullYear();
